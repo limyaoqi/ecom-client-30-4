@@ -16,7 +16,7 @@ import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 
 export default function Cart() {
-  const {enqueueSnackbar} = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
   const queryClient = useQueryClient();
   const { data: carts } = useQuery({
     queryKey: ["cart"],
@@ -124,7 +124,12 @@ export default function Cart() {
             <TableCell align="left"></TableCell>
             <TableCell align="left"></TableCell>
             <TableCell align="right">
-              <Button variant="contained">Checkout</Button>
+              <Button
+                variant="contained"
+                disabled={carts && carts.length === 0}
+              >
+                Checkout
+              </Button>
             </TableCell>
           </TableRow>
         </TableBody>
