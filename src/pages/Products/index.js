@@ -12,14 +12,19 @@ import {
   Grid,
 } from "@mui/material";
 import { useState } from "react";
+import ProductCard from "../ProductCard";
+import { useNavigate } from "react-router-dom";
+import Navbar from "../../components/Navbar";
 
 export default function Products() {
+  const navigate = useNavigate();
   const [category, setCategory] = useState("all");
-  const { data = [] } = useQuery({
-    queryKey: ["products", category],
-    queryFn: () => getProducts(category),
+  const [perPage, setPerPage] = useState(4);
+  const [page, setPage] = useState(1);
+  const { data = [], refetch } = useQuery({
+    queryKey: ["products", category, perPage, page],
+    queryFn: () => getProducts(category, perPage, page),
   });
-  console.log(data);
   const { data: categories = [] } = useQuery({
     queryKey: ["categories"],
     queryFn: () => getCategories(),
@@ -34,12 +39,17 @@ export default function Products() {
           Welcome to My Store
         </Typography>
       </Box>
+      <Navbar />
       <hr />
       <Box style={{ display: "flex", justifyContent: "space-between" }}>
         <Typography variant="h6" style={{ fontWeight: "bolder" }}>
           Products
         </Typography>
-        <Button variant="contained" color="success">
+        <Button
+          variant="contained"
+          color="success"
+          onClick={() => navigate("/add")}
+        >
           Add New
         </Button>
       </Box>
@@ -48,7 +58,10 @@ export default function Products() {
         id="demo-simple-select"
         label="Genre"
         value={category}
-        onChange={(e) => setCategory(e.target.value)}
+        onChange={(e) => {
+          setCategory(e.target.value);
+          setPage(1);
+        }}
       >
         <MenuItem value="all">All Categories</MenuItem>
         {categories.map((category) => (
@@ -57,50 +70,31 @@ export default function Products() {
           </MenuItem>
         ))}
       </Select>
-      <Grid container spacing={3}>
+      <Grid container spacing={12}>
         {data.map((product) => (
-          <Grid key={product.id} item xs={4}>
-            <Card>
-              <CardContent>
-                <Typography fontWeight={"bold"}>{product.name}</Typography>
-                <Box
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    margin: "10px 0",
-                  }}
-                >
-                  <Typography
-                    variant="p"
-                    style={{ backgroundColor: "#EBFBEE", color: "#6ACF7E" }}
-                  >
-                    {product.price}
-                  </Typography>
-                  <Typography
-                    variant="p"
-                    style={{ backgroundColor: "#FFF4E6", color: "#FD882B" }}
-                  >
-                    {product.category}
-                  </Typography>
-                </Box>
-                <Button fullWidth variant="contained" color="primary">
-                  Add To Cart
-                </Button>
-                <Box
-                  style={{ display: "flex", justifyContent: "space-between" ,margin: "10px 0",}}
-                >
-                  <Button variant="contained" style={{borderRadius:"17px"}} color="primary">
-                    Edit
-                  </Button>
-                  <Button variant="contained" style={{borderRadius:"17px"}} color="error">
-                    Delete
-                  </Button>
-                </Box>
-              </CardContent>
-            </Card>
+          <Grid key={product._id} item xs={12} md={6} lg={4}>
+            <ProductCard product={product} />
           </Grid>
         ))}
       </Grid>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: "10px",
+          marginTop: "10px",
+          padding: "20px 0",
+        }}
+      >
+        <Button disabled={page === 1} onClick={() => setPage(page - 1)}>
+          Previous
+        </Button>
+        <span>Page: {page}</span>
+        <Button disabled={data.length === 0} onClick={() => setPage(page + 1)}>
+          Next
+        </Button>
+      </Box>
     </Container>
   );
 }
