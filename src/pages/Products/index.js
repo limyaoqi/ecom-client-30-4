@@ -21,7 +21,7 @@ export default function Products() {
   const [category, setCategory] = useState("all");
   const [perPage, setPerPage] = useState(4);
   const [page, setPage] = useState(1);
-  const { data = [], refetch } = useQuery({
+  const { data = [] } = useQuery({
     queryKey: ["products", category, perPage, page],
     queryFn: () => getProducts(category, perPage, page),
   });

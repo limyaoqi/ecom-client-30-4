@@ -25,6 +25,15 @@ export default function Navbar() {
       >
         Cart
       </Button>
+      <Button
+        onClick={() => navigate("/orders")}
+        style={{
+          backgroundColor: location.pathname === "/orders" ? "blue" : "inherit",
+          color: location.pathname === "/orders" ? "white" : "blue",
+        }}
+      >
+        Cart
+      </Button>
     </Box>
   );
 }

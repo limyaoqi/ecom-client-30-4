@@ -14,6 +14,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getCart, removeProductFromCart } from "../../utils/api_cart";
 import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function Cart() {
   const { enqueueSnackbar } = useSnackbar();
@@ -29,7 +30,7 @@ export default function Cart() {
     cartItems.forEach((cart) => {
       totalPrice += cart.price * cart.quantity;
     });
-    return totalPrice;
+    return totalPrice.toFixed(2);
   };
 
   useEffect(() => {
@@ -91,7 +92,7 @@ export default function Cart() {
                 <TableCell align="left">{cart.price}</TableCell>
                 <TableCell align="left">{cart.quantity}</TableCell>
                 <TableCell align="left">
-                  ${cart.price * cart.quantity}
+                  ${(cart.price * cart.quantity).toFixed(2)}
                 </TableCell>
                 <TableCell align="right">
                   <Button
@@ -126,7 +127,9 @@ export default function Cart() {
             <TableCell align="right">
               <Button
                 variant="contained"
-                disabled={carts && carts.length === 0}
+                disabled={!(carts && carts.length > 0)}
+                component={Link}
+                to={"/checkout"}
               >
                 Checkout
               </Button>
