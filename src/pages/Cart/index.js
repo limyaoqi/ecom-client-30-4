@@ -67,7 +67,7 @@ export default function Cart() {
           variant="h4"
           style={{ fontWeight: "bolder", margin: "13px 0" }}
         >
-          Cart
+          My Orders
         </Typography>
       </Box>
       <Navbar />
