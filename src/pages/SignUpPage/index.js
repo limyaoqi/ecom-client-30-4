@@ -48,7 +48,7 @@ export default function SignUpPage() {
           variant="h4"
           style={{ fontWeight: "bolder", margin: "13px 0" }}
         >
-          Welcome to My Store
+          Sign Up
         </Typography>
       </Box>
       <Navbar />

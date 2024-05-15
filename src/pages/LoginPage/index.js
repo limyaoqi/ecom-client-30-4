@@ -38,7 +38,7 @@ export default function LoginPage() {
           variant="h4"
           style={{ fontWeight: "bolder", margin: "13px 0" }}
         >
-          Welcome to My Store
+          Login
         </Typography>
       </Box>
       <Navbar />
