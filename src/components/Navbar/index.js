@@ -32,7 +32,25 @@ export default function Navbar() {
           color: location.pathname === "/orders" ? "white" : "blue",
         }}
       >
-        Cart
+        Order
+      </Button>
+      <Button
+        onClick={() => navigate("/login")}
+        style={{
+          backgroundColor: location.pathname === "/login" ? "blue" : "inherit",
+          color: location.pathname === "/login" ? "white" : "blue",
+        }}
+      >
+        Login
+      </Button>
+      <Button
+        onClick={() => navigate("/signup")}
+        style={{
+          backgroundColor: location.pathname === "/signup" ? "blue" : "inherit",
+          color: location.pathname === "/signup" ? "white" : "blue",
+        }}
+      >
+        SignUp
       </Button>
     </Box>
   );

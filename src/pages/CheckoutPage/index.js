@@ -10,7 +10,7 @@ import {
 import Navbar from "../../components/Navbar";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSnackbar } from "notistack";
-import { emptyCart, getCart } from "../../utils/api_cart";
+import {  getCart } from "../../utils/api_cart";
 import { addNewOrder } from "../../utils/api_order";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -29,10 +29,9 @@ export default function CheckoutPage() {
 
   const addNewMutate = useMutation({
     mutationFn: addNewOrder,
-    onSuccess: () => {
-      navigate("/orders");
-      emptyCart();
-      queryClient.invalidateQueries({queryKey:["cart"]})
+    onSuccess: (responseData) => {
+      const billplz_url = responseData.newOrder.billplz_url;
+      window.location.href = billplz_url;
     },
     onError: (error) => {
       // if API call is error, do what?
@@ -61,9 +60,11 @@ export default function CheckoutPage() {
 
   const calculateTotal = () => {
     let total = 0;
-    cart.forEach((item) => {
-      total = total + item.quantity * item.price;
-    });
+    if (cart) {
+      cart.forEach((item) => {
+        total = total + item.quantity * item.price;
+      });
+    }
     return total.toFixed(2);
   };
   return (
@@ -137,7 +138,7 @@ export default function CheckoutPage() {
             Your order summary
           </Typography>
           {/* .map here */}
-          {cart.map((item) => (
+          {cart&&cart.map((item) => (
             <div
               key={item._id}
               style={{

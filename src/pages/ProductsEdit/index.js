@@ -11,8 +11,10 @@ import {
   CardContent,
   TextField,
   Box,
+  Input,
 } from "@mui/material";
 import { updateProduct, getProduct } from "../../utils/api";
+import { uploadImage } from "../../utils/api_images";
 
 export default function ProductsEdit() {
   const navigate = useNavigate();
@@ -22,6 +24,7 @@ export default function ProductsEdit() {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
+  const [image, setImage] = useState("");
 
   const { data: product, isLoading } = useQuery({
     queryKey: ["product", id],
@@ -29,10 +32,12 @@ export default function ProductsEdit() {
   });
   useEffect(() => {
     if (product) {
+      console.log(product);
       setName(product.name);
       setDescription(product.description);
       setPrice(product.price);
       setCategory(product.category);
+      setImage(product.image ? product.image : "");
     }
   }, [product]);
 
@@ -57,12 +62,30 @@ export default function ProductsEdit() {
       description: description,
       price: price,
       category: category,
+      image: image,
     });
+  };
+
+  const uploadImageMutation = useMutation({
+    mutationFn: uploadImage,
+    onSuccess: (data) => {
+      console.log(data);
+      setImage(data.image_url);
+      enqueueSnackbar("Image Upload Successfully!", { variant: "success" });
+    },
+    onError: (error) => {
+      enqueueSnackbar(error.response.data.message, { variant: "error" });
+    },
+  });
+
+  const handleImageUpload = (event) => {
+    uploadImageMutation.mutate(event.target.files[0]);
   };
 
   if (isLoading) {
     return <Container>Loading...</Container>;
   }
+  console.log(image);
 
   return (
     <Container>
@@ -125,6 +148,24 @@ export default function ProductsEdit() {
                 onChange={(e) => setCategory(e.target.value)}
               />
             </Grid>
+            {image !== "" ? (
+              <>
+                <div>
+                  <img
+                    src={"http://localhost:8888/" + image}
+                    width="300px"
+                    height="300px"
+                  />
+                </div>
+                <Button onClick={() => setImage("")}>Remove Image</Button>
+              </>
+            ) : (
+              <input
+                type="file"
+                multiple={false}
+                onChange={handleImageUpload}
+              />
+            )}
             <Grid item xs={12}>
               <Button variant="contained" fullWidth onClick={handleFormSubmit}>
                 Submit

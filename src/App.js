@@ -7,6 +7,9 @@ import { SnackbarProvider } from "notistack";
 import Cart from "./pages/Cart";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderPage from "./pages/OrderPage";
+import PaymentVerify from "./pages/PaymentVerify";
+import LoginPage from "./pages/LoginPage";
+import SignUpPage from "./pages/SignUpPage";
 
 function App() {
   const queryClient = new QueryClient();
@@ -29,6 +32,9 @@ function App() {
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/orders" element={<OrderPage />} />
+            <Route path="/verify_payment" element={<PaymentVerify />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignUpPage />} />
 
           </Routes>
         </BrowserRouter>

@@ -19,7 +19,7 @@ import { Link } from "react-router-dom";
 export default function Cart() {
   const { enqueueSnackbar } = useSnackbar();
   const queryClient = useQueryClient();
-  const { data: carts } = useQuery({
+  const { data: carts=[] } = useQuery({
     queryKey: ["cart"],
     queryFn: () => getCart(),
   });
