@@ -13,9 +13,14 @@ import {
 } from "@mui/material";
 import { addProduct } from "../../utils/api";
 import { useSnackbar } from "notistack";
+import { useCookies } from "react-cookie";
 
 export default function ProductsAddNew() {
-  const {enqueueSnackbar} = useSnackbar();
+  const [cookie] = useCookies("currentUser");
+  const { currentUser = {} } = cookie;
+  const { loginuser = {} } = currentUser;
+  const { token } = loginuser;
+  const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -26,7 +31,7 @@ export default function ProductsAddNew() {
   const addNewMutation = useMutation({
     mutationFn: addProduct,
     onSuccess: () => {
-      enqueueSnackbar("Add Product Successfully", { variant: "Success" });
+      enqueueSnackbar("Add Product Successfully", { variant: "success" });
       // if API call is success, do what?
       navigate("/");
     },
@@ -44,6 +49,7 @@ export default function ProductsAddNew() {
       description: description,
       price: price,
       category: category,
+      token: token,
     });
   };
 

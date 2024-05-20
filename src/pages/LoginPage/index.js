@@ -5,10 +5,13 @@ import { useSnackbar } from "notistack";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { userLogin } from "../../utils/api_user";
+import { useCookies } from "react-cookie";
 
 export default function LoginPage() {
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
+
+  const [cookie, setCookie] = useCookies(["currentUser"]);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,8 +19,8 @@ export default function LoginPage() {
   const loginMutation = useMutation({
     mutationFn: userLogin,
     onSuccess: (data) => {
-        console.log(data)
-      enqueueSnackbar("Login Successfully", { variant: "Success" });
+      setCookie("currentUser", data, { maxAge: 3600 * 24 * 30 });
+      enqueueSnackbar("Login Successfully", { variant: "success" });
       navigate("/");
     },
     onError: (error) => {
@@ -25,11 +28,17 @@ export default function LoginPage() {
     },
   });
   const handleSubmit = (e) => {
-    e.preventDefault();
-    loginMutation.mutate({
-      email,
-      password,
-    });
+    if (email === "" || password === "") {
+      enqueueSnackbar("Password and confirm password should be match", {
+        variant: "error",
+      });
+    } else {
+      e.preventDefault();
+      loginMutation.mutate({
+        email,
+        password,
+      });
+    }
   };
   return (
     <Container>

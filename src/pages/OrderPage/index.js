@@ -16,13 +16,20 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { deleteOrder, getOrders, updateOrder } from "../../utils/api_order";
 import { useState } from "react";
 import { useSnackbar } from "notistack";
+import { useCookies } from "react-cookie";
 
 export default function OrderPage() {
+  const [cookie] = useCookies("currentUser");
+  const { currentUser = {} } = cookie;
+  const { loginuser = {} } = currentUser;
+  const { role, token } = loginuser;
+
   const { enqueueSnackbar } = useSnackbar();
   const queryClient = useQueryClient();
+
   const { data: orders = [] } = useQuery({
-    queryKey: ["orders"],
-    queryFn: () => getOrders(),
+    queryKey: ["orders", token],
+    queryFn: () => getOrders(token),
   });
 
   const updateOrderMutation = useMutation({
@@ -42,6 +49,7 @@ export default function OrderPage() {
     updateOrderMutation.mutate({
       ...order,
       status: status,
+      token,
     });
   };
 
@@ -61,7 +69,10 @@ export default function OrderPage() {
   const handleDelete = (id) => {
     const result = window.confirm("Are you sure remove this cart?");
     if (result) {
-      deleteOrderMutation.mutate(id);
+      deleteOrderMutation.mutate({
+        id,
+        token,
+      });
     }
   };
 
@@ -125,7 +136,7 @@ export default function OrderPage() {
                   <Button
                     variant="outlined"
                     color="error"
-                    onClick={()=>handleDelete(order._id)}
+                    onClick={() => handleDelete(order._id)}
                   >
                     delete
                   </Button>

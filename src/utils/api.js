@@ -47,6 +47,7 @@ export const addProduct = async (data) => {
     {
       headers: {
         "Content-Type": "application/json", // telling the API you are sending JSON data
+        Authorization: `Bearer ${data.token}`,
       },
     }
   );
@@ -60,15 +61,20 @@ export const updateProduct = async (data) => {
     {
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${data.token}`,
       },
     }
   );
   return response.data;
 };
 
-export const deleteProduct = async (id) => {
+export const deleteProduct = async (data) => {
   try {
-    const response = await axios.delete(API_URL + "/products/" + id);
+    const response = await axios.delete(`${API_URL}/products/${data.id}`, {
+      headers: {
+        Authorization: `Bearer ${data.token}`,
+      },
+    });
     return response.data;
   } catch (error) {
     console.log("error", error);

@@ -5,10 +5,12 @@ import { useMutation } from "@tanstack/react-query";
 import { userSignup } from "../../utils/api_user";
 import { useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
+import { useCookies } from "react-cookie";
 
 export default function SignUpPage() {
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
+  const [cookie, setCookie] = useCookies(["currentUser"]);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -18,9 +20,9 @@ export default function SignUpPage() {
   const signUpMutation = useMutation({
     mutationFn: userSignup,
     onSuccess: (data) => {
-      console.log(data);
+      setCookie(data);
       enqueueSnackbar("Sign Up Successfully", { variant: "success" });
-      navigate("/login");
+      navigate("/");
     },
     onError: (error) => {
       enqueueSnackbar(error.response.data.message, { variant: "error" });
@@ -29,15 +31,15 @@ export default function SignUpPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (password === password2) {
+    if (name === "" || email === "" || password === "") {
+      enqueueSnackbar("All fields are required", { variant: "error" });
+    } else if (password !== password2) {
+      enqueueSnackbar("Password must be match.", { variant: "danger" });
+    } else {
       signUpMutation.mutate({
         name,
         email,
         password,
-      });
-    } else {
-      enqueueSnackbar("Password and confirm password should be match", {
-        variant: "error",
       });
     }
   };

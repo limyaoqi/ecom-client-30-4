@@ -10,14 +10,20 @@ import {
 import Navbar from "../../components/Navbar";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSnackbar } from "notistack";
-import {  getCart } from "../../utils/api_cart";
+import { getCart } from "../../utils/api_cart";
 import { addNewOrder } from "../../utils/api_order";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useCookies } from "react-cookie";
 
 export default function CheckoutPage() {
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const [cookie] = useCookies("currentUser");
+  const { currentUser = {} } = cookie;
+  const { loginuser = {} } = currentUser;
+  const { role, token } = loginuser;
+
+  // const navigate = useNavigate();
+  // const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -54,6 +60,7 @@ export default function CheckoutPage() {
         customerEmail: email,
         products: cart,
         totalPrice: calculateTotal(),
+        token,
       });
     }
   };
@@ -138,22 +145,23 @@ export default function CheckoutPage() {
             Your order summary
           </Typography>
           {/* .map here */}
-          {cart&&cart.map((item) => (
-            <div
-              key={item._id}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginTop: "20px",
-              }}
-            >
-              <Typography variant="body1">{item.name}</Typography>
-              <Typography variant="body1">
-                ${(item.price * item.quantity).toFixed(2)}
-              </Typography>
-            </div>
-          ))}
+          {cart &&
+            cart.map((item) => (
+              <div
+                key={item._id}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  marginTop: "20px",
+                }}
+              >
+                <Typography variant="body1">{item.name}</Typography>
+                <Typography variant="body1">
+                  ${(item.price * item.quantity).toFixed(2)}
+                </Typography>
+              </div>
+            ))}
           <div
             style={{
               display: "flex",

@@ -4,8 +4,13 @@ import { useSnackbar } from "notistack";
 import { Link } from "react-router-dom";
 import { deleteProduct } from "../../utils/api";
 import { addToCart } from "../../utils/api_cart";
+import { useCookies } from "react-cookie";
 
 export default function ProductCard({ product }) {
+  const [cookie] = useCookies("currentUser");
+  const { currentUser = {} } = cookie;
+  const { loginuser = {} } = currentUser;
+  const { role, token } = loginuser;
   const { enqueueSnackbar } = useSnackbar();
   const queryClient = useQueryClient();
   const deleteMutation = useMutation({
@@ -23,7 +28,7 @@ export default function ProductCard({ product }) {
     e.preventDefault();
     const result = window.confirm("Are you sure delete this product?");
     if (result) {
-      deleteMutation.mutate(product._id);
+      deleteMutation.mutate({ id: product._id, token });
     }
   };
 
@@ -42,12 +47,26 @@ export default function ProductCard({ product }) {
   const handleAddToCart = (event) => {
     event.preventDefault();
     // trigger the mutation to call the API
-    addCartMutation.mutate(product);
+    if (loginuser && loginuser.email) {
+      addCartMutation.mutate(product);
+    } else {
+      enqueueSnackbar("Please login first", { variant: "error" });
+    }
   };
-
+console.log(product)
   return (
     <Card>
       <CardContent>
+        <img
+          src={
+            "http://localhost:8888/" +
+            (product.image && product.image !== ""
+              ? product.image
+              : "uploads/image.png")
+          }
+          width={"100%"}
+          height={"200px"}
+        />
         <Typography fontWeight={"bold"}>{product.name}</Typography>
         <Box
           style={{
@@ -69,34 +88,41 @@ export default function ProductCard({ product }) {
             {product.category}
           </Typography>
         </Box>
-        <Button fullWidth variant="contained" color="primary" onClick={handleAddToCart}>
+        <Button
+          fullWidth
+          variant="contained"
+          color="primary"
+          onClick={handleAddToCart}
+        >
           Add To Cart
         </Button>
-        <Box
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            margin: "10px 0",
-          }}
-        >
-          <Button
-            variant="contained"
-            component={Link}
-            to={`/products/${product._id}`}
-            style={{ borderRadius: "17px" }}
-            color="primary"
+        {role && role === "admin" && (
+          <Box
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              margin: "10px 0",
+            }}
           >
-            Edit
-          </Button>
-          <Button
-            variant="contained"
-            style={{ borderRadius: "17px" }}
-            color="error"
-            onClick={handleDelete}
-          >
-            Delete
-          </Button>
-        </Box>
+            <Button
+              variant="contained"
+              component={Link}
+              to={`/products/${product._id}`}
+              style={{ borderRadius: "17px" }}
+              color="primary"
+            >
+              Edit
+            </Button>
+            <Button
+              variant="contained"
+              style={{ borderRadius: "17px" }}
+              color="error"
+              onClick={handleDelete}
+            >
+              Delete
+            </Button>
+          </Box>
+        )}
       </CardContent>
     </Card>
   );

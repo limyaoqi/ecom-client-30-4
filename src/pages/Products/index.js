@@ -15,9 +15,14 @@ import { useState } from "react";
 import ProductCard from "../ProductCard";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
+import { useCookies } from "react-cookie";
 
 export default function Products() {
   const navigate = useNavigate();
+  const [cookie] = useCookies("currentUser");
+  const { currentUser = {} } = cookie;
+  const { loginuser={} } = currentUser;
+  const { role } = loginuser;
   const [category, setCategory] = useState("all");
   const [perPage, setPerPage] = useState(4);
   const [page, setPage] = useState(1);
@@ -45,13 +50,15 @@ export default function Products() {
         <Typography variant="h6" style={{ fontWeight: "bolder" }}>
           Products
         </Typography>
-        <Button
-          variant="contained"
-          color="success"
-          onClick={() => navigate("/add")}
-        >
-          Add New
-        </Button>
+        {role && role === "admin" && (
+          <Button
+            variant="contained"
+            color="success"
+            onClick={() => navigate("/add")}
+          >
+            Add New
+          </Button>
+        )}
       </Box>
       <Select
         labelId="demo-simple-select-label"
