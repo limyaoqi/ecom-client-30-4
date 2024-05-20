@@ -81,12 +81,16 @@ export default function Categories() {
       </Box>
       <Navbar />
       <hr />
-      <Typography variant="h4" fontWeight={"bolder"} marginTop={"20px"}>
+      <Typography variant="h4" fontWeight={"bolder"} margin={"20px 0 10px 0"}>
         Categories
       </Typography>
       <Box
         display="flex"
         alignItems="center"
+        border={"2px solid #ccc"}
+        borderRadius={"2px"}
+        padding={"0 10px"}
+        margin={"10px 0"}
         component="form"
         onSubmit={handleFormSubmit}
       >
@@ -107,7 +111,12 @@ export default function Categories() {
           Add
         </Button>
       </Box>
-      <Table>
+      <Table
+        sx={{
+          border: "2px solid #ccc",
+          borderRadius: "4px", 
+        }}
+      >
         <TableHead>
           <TableRow>
             <TableCell>Name</TableCell>
