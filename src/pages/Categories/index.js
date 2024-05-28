@@ -2,6 +2,11 @@ import {
   Box,
   Button,
   Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Table,
   TableBody,
   TableCell,
@@ -14,7 +19,11 @@ import Navbar from "../../components/Navbar";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getCategories } from "../../utils/api";
 import { useSnackbar } from "notistack";
-import { addNewCategory, deleteCategory } from "../../utils/api_category";
+import {
+  addNewCategory,
+  deleteCategory,
+  updateCategory,
+} from "../../utils/api_category";
 import { useState } from "react";
 import { useCookies } from "react-cookie";
 
@@ -26,6 +35,9 @@ export default function Categories() {
   const { currentUser = {} } = cookie;
   const { loginuser = {} } = currentUser;
   const { token } = loginuser;
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editId, setEditId] = useState("");
 
   const { data: categories = [] } = useQuery({
     queryKey: ["category"],
@@ -52,11 +64,33 @@ export default function Categories() {
     });
   };
 
+  const editMutate = useMutation({
+    mutationFn: updateCategory,
+    onSuccess: () => {
+      enqueueSnackbar("Update Category Successfully", { variant: "success" });
+      queryClient.invalidateQueries({ queryKey: ["category"] });
+      setOpenEditModal(false)
+    },
+    onError: (error) => {
+      // if API call is error, do what?
+      enqueueSnackbar(error.response.data.message, { variant: "error" });
+    },
+  });
+
+  const handleUpdate = () => {
+    editMutate.mutate({
+      id: editId,
+      name: editName,
+      token: token,
+    });
+  };
+
   const deleteMutation = useMutation({
     mutationFn: deleteCategory,
     onSuccess: () => {
       enqueueSnackbar("Deleted Successfully!", { variant: "success" });
       queryClient.invalidateQueries({ queryKey: ["category"] });
+      setName("");
     },
     onError: (error) => {
       enqueueSnackbar(error.response.data.message, { variant: "error" });
@@ -68,6 +102,10 @@ export default function Categories() {
     if (result) {
       deleteMutation.mutate({ id: id, token });
     }
+  };
+
+  const handleClose = () => {
+    setOpenEditModal(false);
   };
   return (
     <Container>
@@ -114,7 +152,7 @@ export default function Categories() {
       <Table
         sx={{
           border: "2px solid #ccc",
-          borderRadius: "4px", 
+          borderRadius: "4px",
         }}
       >
         <TableHead>
@@ -134,6 +172,11 @@ export default function Categories() {
                       variant="contained"
                       color="primary"
                       sx={{ marginRight: "5px" }}
+                      onClick={() => {
+                        setOpenEditModal(true);
+                        setEditId(category._id);
+                        setEditName(category.name);
+                      }}
                     >
                       Edit
                     </Button>
@@ -155,6 +198,38 @@ export default function Categories() {
           )}
         </TableBody>
       </Table>
+      <Dialog
+        open={openEditModal}
+        onClose={handleClose}
+        aria-labelledby="responsive-dialog-title"
+      >
+        <DialogTitle>Edit Category</DialogTitle>
+        <DialogContent
+          sx={{
+            paddingTop: "10px",
+          }}
+        >
+          <TextField
+            label="Name"
+            variant="outlined"
+            sx={{ width: "100%", marginTop: "15px" }}
+            value={editName}
+            onChange={(e) => setEditName(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button
+            variant="contained"
+            color="success"
+            onClick={() => {
+              handleUpdate();
+            }}
+          >
+            Update
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }

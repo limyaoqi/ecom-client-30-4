@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8888";
+import { API_URL } from "./data";
 
 export const getProducts = async (category, perPage, page) => {
   try {

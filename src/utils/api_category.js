@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8888";
+import { API_URL } from "./data";
 
 export const getCategory = async () => {
   try {
@@ -36,4 +36,18 @@ export const deleteCategory = async (data) => {
   } catch (error) {
     console.log("error", error);
   }
+};
+
+export const updateCategory = async (data) => {
+  const response = await axios.put(
+    `${API_URL}/category/${data.id}`,
+    JSON.stringify(data), // data you want to pass through the API in JSON format
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${data.token}`,
+      },
+    }
+  );
+  return response.data;
 };

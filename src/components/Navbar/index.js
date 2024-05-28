@@ -8,7 +8,8 @@ export default function Navbar() {
   const navigate = useNavigate();
   const [cookie, setCookie, removeCookie] = useCookies("currentUser");
   const { currentUser = {} } = cookie;
-  const { loginuser } = currentUser;
+  const { loginuser = {} } = currentUser;
+  const { role } = loginuser;
 
   return (
     <Box style={{ display: "flex", justifyContent: "space-between" }}>
@@ -41,16 +42,18 @@ export default function Navbar() {
         >
           Order
         </Button>
-        <Button
-          onClick={() => navigate("/category")}
-          style={{
-            backgroundColor:
-              location.pathname === "/category" ? "blue" : "inherit",
-            color: location.pathname === "/category" ? "white" : "blue",
-          }}
-        >
-          Categories
-        </Button>
+        {role && role === "admin" && (
+          <Button
+            onClick={() => navigate("/category")}
+            style={{
+              backgroundColor:
+                location.pathname === "/category" ? "blue" : "inherit",
+              color: location.pathname === "/category" ? "white" : "blue",
+            }}
+          >
+            Categories
+          </Button>
+        )}
       </Box>
       {loginuser ? (
         <Button

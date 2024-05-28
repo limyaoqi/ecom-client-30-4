@@ -12,8 +12,12 @@ import {
   TextField,
   Box,
   Input,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
-import { updateProduct, getProduct } from "../../utils/api";
+import { updateProduct, getProduct, getCategories } from "../../utils/api";
 import { uploadImage } from "../../utils/api_images";
 import { useCookies } from "react-cookie";
 
@@ -35,6 +39,13 @@ export default function ProductsEdit() {
     queryKey: ["product", id],
     queryFn: () => getProduct(id),
   });
+
+  // load the categories
+  const { data: categories = [] } = useQuery({
+    queryKey: ["categories"],
+    queryFn: () => getCategories(),
+  });
+
   useEffect(() => {
     if (product) {
       console.log(product);
@@ -146,13 +157,30 @@ export default function ProductsEdit() {
               />
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                label="Category"
-                variant="outlined"
-                fullWidth
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-              />
+              <FormControl
+                sx={{ marginTop: "10px", width: "200px", marginLeft: "10px" }}
+              >
+                <InputLabel id="product-select-label">Product</InputLabel>
+                <Select
+                  labelId="product-select-label"
+                  id="product-select"
+                  label="Product"
+                  value={category}
+                  onChange={(event) => {
+                    setCategory(event.target.value);
+                    // reset the page to 1
+                  }}
+                >
+                  <MenuItem value="all">All</MenuItem>
+                  {categories.map((category) => {
+                    return (
+                      <MenuItem key={category._id} value={category._id}>
+                        {category.name}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              </FormControl>
             </Grid>
             {image !== "" ? (
               <>

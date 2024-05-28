@@ -1,7 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8888";
-
+import { API_URL } from "./data";
 export const getOrders = async (token) => {
   try {
     const response = await axios.get(`${API_URL}/orders`, {
@@ -44,11 +43,10 @@ export const updateOrder = async (data) => {
 };
 
 export const deleteOrder = async (data) => {
-    const response = await axios.delete(`${API_URL}/orders/${data._id}`, {
-      headers: {
-        Authorization: `Bearer ${data.token}`,
-      },
-    });
-    return response.data;
-  
+  const response = await axios.delete(`${API_URL}/orders/${data._id}`, {
+    headers: {
+      Authorization: `Bearer ${data.token}`,
+    },
+  });
+  return response.data;
 };

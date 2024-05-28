@@ -53,7 +53,7 @@ export default function ProductCard({ product }) {
       enqueueSnackbar("Please login first", { variant: "error" });
     }
   };
-console.log(product)
+  console.log(product);
   return (
     <Card>
       <CardContent>
@@ -85,7 +85,9 @@ console.log(product)
             variant="p"
             style={{ backgroundColor: "#FFF4E6", color: "#FD882B" }}
           >
-            {product.category}
+            {product.category && product.category.name
+              ? product.category.name
+              : null}
           </Typography>
         </Box>
         <Button
